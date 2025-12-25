@@ -1,0 +1,100 @@
+# golangci-lint configuration
+# https://golangci-lint.run/usage/configuration/
+
+run:
+  timeout: 5m
+  modules-download-mode: readonly
+
+linters:
+  disable-all: true
+  enable:
+    - errcheck
+    - gosimple
+    - govet
+    - ineffassign
+    - staticcheck
+    - unused
+    - gofmt
+    - goimports
+    - misspell
+    - unconvert
+    - goconst
+    - gocritic
+    - gocyclo
+    - gosec
+    - nakedret
+    - prealloc
+    - revive
+    - whitespace
+
+linters-settings:
+  gocyclo:
+    min-complexity: 20
+
+  goconst:
+    min-len: 3
+    min-occurrences: 3
+
+  misspell:
+    locale: US
+
+  revive:
+    rules:
+      - name: blank-imports
+      - name: context-as-argument
+      - name: context-keys-type
+      - name: dot-imports
+      - name: error-return
+      - name: error-strings
+      - name: error-naming
+      - name: exported
+      - name: increment-decrement
+      - name: var-naming
+      - name: var-declaration
+      - name: range
+      - name: receiver-naming
+      - name: time-naming
+      - name: unexported-return
+      - name: indent-error-flow
+      - name: errorf
+      - name: empty-block
+      - name: superfluous-else
+      - name: unreachable-code
+      - name: redefines-builtin-id
+
+  gosec:
+    excludes:
+      - G104  # Unhandled errors (handled case by case)
+      - G115  # Integer overflow conversion (safe in WASM context)
+      - G304  # File path taint (expected for file operations)
+
+  gocritic:
+    enabled-tags:
+      - diagnostic
+      - style
+      - performance
+    disabled-checks:
+      - hugeParam
+      - rangeValCopy
+
+issues:
+  exclude-rules:
+    - path: _test\.go
+      linters:
+        - gosec
+        - goconst
+        - gocyclo
+        - errcheck
+
+    - path: examples/
+      linters:
+        - errcheck
+        - gosec
+
+    # bridge.go has high complexity init function (many WASM function bindings)
+    - path: internal/bridge/bridge\.go
+      linters:
+        - gocyclo
+
+  max-issues-per-linter: 50
+  max-same-issues: 10
